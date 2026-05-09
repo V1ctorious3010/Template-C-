@@ -1,50 +1,48 @@
-// g++ test.cpp -o test -mconsole
+ // g++ test.cpp -o test -mconsole
 #include <bits/stdc++.h>
 using namespace std;
 #define getbit(x, i) ((x >> i) & 1)
 #define fasty ios_base::sync_with_stdio(0), cin.tie(0), cout.tie(0)
-const int N = 502;
-int f[N][N];
-int f2[N];
-int a[N];
-int n;
-int calc(int l, int r){
-    if(l == r - 1){
-        if(a[l] == a[r])  return a[l] + 1;
-        return 0;
+#define int long long
+const int N = 1e6 + 10;
+int pi[N];
+int f[N];
+int b[N];
+
+void kmp(string &s){
+    pi[1] = 0;
+    for(int i = 2; i <= s.size() - 1; i ++){
+        int k = pi[i - 1];
+        while(k && s[k + 1] != s[i])   k = pi[k];
+        if(s[k + 1] == s[i])  k ++;
+        pi[i] = k;
     }
-    if(l == r){
-        return a[l];
-    }
-    if(f[l][r] != -1)  return f[l][r];
-    int & tmp = f[l][r];
-    tmp = 0;
-    for(int k = l; k < r; k ++){
-        if(calc(l, k) == calc(k + 1, r) && calc(l, k) != 0){
-            tmp = calc(l, k) + 1;
-        }
-    }
-    return tmp;
 }
-main(){
+signed main(){
     fasty;
-    //freopen("task.inp", "r", stdin);
-    cin >> n;
-    for(int i = 1; i <= n; i ++){
-        cin >> a[i];
-    }
-    memset(f, -1, sizeof f);
-    memset(f2, 127, sizeof f2);
-    f2[0] = 0;
-    for(int i = 1; i <= n; i ++){
-        for(int j = i - 1; j >= 0; j --){
-            if(calc(j + 1, i)){
-                f2[i] = min(f2[i], f2[j] + 1);
+    //freopen("task.inp","r",stdin);
+    int T;
+    cin >> T;
+    while(T --){
+        int n, q;
+        cin >> n >> q;
+        string s;
+        cin >> s;
+        while(q --){
+            int l, r;
+            cin >> l >> r;
+            string tmp = s.substr(l - 1, r - l + 1);
+            tmp = " " + tmp;
+            kmp(tmp);
+            int res = 0;
+            for(int i = 1; i <= r - l + 1; i ++){
+                if(pi[i] == 0)   b[i] = i;
+                else b[i] = b[pi[i]];
+                f[i] = f[i - b[i]] + 1;
+                res += f[i];
             }
+            cout << res << endl;
         }
+
     }
-    /*for(int i = 1; i <= n; i ++){
-        cout << f[i] << " ";
-    } */
-    cout << f2[n];
 }
